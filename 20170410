@@ -1,0 +1,73 @@
+#include "Pump.h"
+
+Pump pump1(40, 42, 44);
+
+void setup() {
+  Serial.begin(9600); 
+  Serial.println("Ready");
+  Serial.println("0 => valveTest");
+  Serial.println("1 => prime");
+  Serial.println("2 => Experiment 1"); 
+  Serial.println("3 => Jonathan!"); 
+  // put your setup code here, to run once:
+
+  pump1.reagentSet(22, 24, 26, 28, 30, 32, 34, 36, 38);
+//  pump1.intervals(400, 400, 400, 400, 400, 400); 
+  pump1.intervals(200, 200, 200, 200, 200, 200);
+//  pump1.intervals(100, 100, 100, 100, 100, 100);  //16
+//  pump1.intervals(150, 150, 150, 150, 150, 150); 
+//  pump1.intervals(75, 75, 75, 75, 75, 75);  // 
+//   pump1.intervals(50, 50, 50, 50, 50, 50); //33
+//  pump1.intervals(20, 200, 20, 200, 20, 200); 
+//    pump1.intervals(100, 150, 100, 150, 100, 150); 
+//  pump1.intervals(25, 50, 25, 50, 25, 50); 
+//  pump1.intervals(20, 40,  20, 20, 20, 20); 
+};
+
+void loop(  ) {
+  if (Serial.available() > 0){
+    int incoming = Serial.read()-'0';// this is for MATLAB version
+//      int incoming = Serial.parseInt(); 
+    Serial.print("Number = ");
+    Serial.println(incoming);
+    if (incoming == 0){
+      pump1.wash(10); 
+    }
+    if (incoming == 1){
+      pump1.youngjae(100);
+    }
+    if (incoming == 2){ // Experiment 1
+    int num=133; 
+
+  for (int i=0; i <6; i++){
+    Serial.println(i); 
+      pump1.reagent3(num);
+      pump1.reagent4(num);}            
+    
+    }
+    if (incoming ==3){ // Jonathan's experiment
+      int one = 133; // one = number of strokes, approx 133 strokes per minute
+      int halfmin = 62; 
+      int five = one*5; 
+      int ten = five * 2;
+      pump1.wash(five);
+      pump1.sample(five);
+      delay(1800000); 
+      pump1.wash(one); 
+      pump1.reagent1(five);
+      delay(1800000); 
+      pump1.wash(one); 
+      pump1.reagent2(one);
+      delay(300000);   // 5 minute delay 
+      pump1.wash(one);
+//      pump1.wash(num);
+//      pump1.sampple(num);
+//      pump1.reagent1(num);
+//      pump1.reagent2(num);
+//      pump1.reagent3(num);
+//      pump1.reagent4(num);
+    }
+  }
+  // put your main code here, to run repeatedly:
+
+}
