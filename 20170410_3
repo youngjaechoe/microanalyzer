@@ -1,0 +1,71 @@
+/*
+Pump library for operating microfluidic analyzer
+ Richard Novak
+ February 14, 2016
+ Wyss Institute, Boston, MA 02115
+ */
+
+#ifndef Pump_h
+#define Pump_h
+
+#include "Arduino.h"
+
+
+
+class Pump
+{
+  public:
+    Pump(int valve1, int valve2, int valve3);
+    void start(int strokes);
+    void test(int strokes);
+    void reset();
+    void intervals(int t1, int t2, int t3, int t4, int t5, int t6);
+      void reagentSet(int re1, int re2, int re3, int re4, int re5, int re6, int re7, int re8, int re9);
+      void wash(int vol);
+      void sample(int vol);
+      void reagent1(int vol);
+      void reagent2(int vol);
+      void reagent3(int vol);
+      void reagent4(int vol);
+      void prime(int vol);
+      void youngjae(int vol); 
+//      double cal;
+      int cal; 
+      int strokes;
+      int interval[];
+
+      private:
+      unsigned long currentMillis;
+      unsigned long previousMillis;
+      unsigned long time;
+      int num; 
+      int currentStroke;
+      int _strokes;
+      int _Step;
+      int _valve1;
+      int _valve2;
+      int _valve3;
+      int _re1;
+      int _re2;
+      int _re3;
+      int _re4;
+      int _re5;
+      int _re6;
+      int _re7;
+      int _re8;
+      int _re9;
+      int _t1;
+      int _t2;
+      int _t3;
+      int _t4;
+      int _t5;
+      int _t6;
+      int valveConversion;
+
+};
+
+
+#endif
+
+
+
