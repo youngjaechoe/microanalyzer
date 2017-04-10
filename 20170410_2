@@ -1,0 +1,271 @@
+#include "Pump.h"
+
+Pump::Pump(int valve1, int valve2, int valve3)
+{
+  pinMode(valve1, OUTPUT);
+  pinMode(valve2, OUTPUT);
+  pinMode(valve3, OUTPUT); 
+  _valve1 = valve1; 
+  _valve2 = valve2; 
+  _valve3 = valve3;
+ 
+// int cal = 1; // Calibration const converting strokes to microliters. Units are uL/stroke
+}
+
+void Pump::intervals(int t1, int t2, int t3, int t4, int t5, int t6)
+{
+  _t1 = t1;
+  _t2 = t2; 
+  _t3 = t3;
+  _t4 = t4; 
+  _t5 = t5;
+  _t6 = t6;
+}
+
+void Pump::reagentSet(int re1, int re2, int re3, int re4, int re5, int re6, int re7, int re8, int re9)
+{
+  // sets up pins for reagents and sensor and waste bypass
+  pinMode(re1, OUTPUT);
+  pinMode(re2, OUTPUT);
+  pinMode(re3, OUTPUT);
+  pinMode(re4, OUTPUT);
+  pinMode(re5, OUTPUT);
+  pinMode(re6, OUTPUT);
+  pinMode(re7, OUTPUT);
+  pinMode(re8, OUTPUT);
+  pinMode(re9, OUTPUT);
+  _re1 = re1; // wash buffer
+  _re2 = re2; // sample input
+  _re3 = re3; 
+  _re4 = re4; 
+  _re5 = re5;
+  _re6 = re6;
+  _re7 = re7; // waste bypass I (need I and II open to go to waste)
+  _re8 = re8; // to sensor
+  _re9 = re9; // waste bypass II
+}
+
+void Pump::prime(int vol)
+{
+  int strokes = vol/cal; // Number of pump strokes per valve during priming. 
+  int valves[] = {_re1, _re2, _re3, _re4, _re5, _re6}; // List valves with private variables
+//  int valveTotal = sizeof(valves) / sizeof(valves[0]); // Number of valves to prime
+  int valveTotal = sizeof(valves); 
+  Serial.println("PRIMING VALVES");
+  
+  for (int i = 0; i < valveTotal; i++){
+    
+    // prime all fluidic connections through bypass
+    
+    Serial.println("Reagent"); 
+    Serial.print(valves[i]-(21+i));
+    
+    digitalWrite(_re7, HIGH);
+    digitalWrite(_re9, HIGH);  
+    digitalWrite(valves[i], HIGH); 
+    start(strokes);  
+    digitalWrite(_re7, LOW);
+    digitalWrite(_re9, LOW);
+  }
+    // prime all sensor channels with wash buffer
+    Serial.println("Priming Sensor with Wash");
+    
+    digitalWrite(_re8, HIGH);
+    digitalWrite(_re1, HIGH); 
+    start(strokes);
+    digitalWrite(_re1, LOW);
+    digitalWrite(_re8, LOW);
+    
+    Serial.println("PRIMING COMPLETE");       
+    
+}  
+
+void Pump::youngjae(int vol){
+  double cal = 1;
+  int strokes = vol/cal;
+  digitalWrite(_re1, HIGH);
+  digitalWrite(_re2, HIGH);
+  digitalWrite(_re3, HIGH); 
+  digitalWrite(_re4, HIGH); 
+  digitalWrite(_re5, HIGH);
+  digitalWrite(_re6, HIGH);
+  digitalWrite(_re7, HIGH); 
+  digitalWrite(_re8, HIGH); 
+  digitalWrite(38, HIGH); 
+  digitalWrite(40, HIGH);
+  digitalWrite(42, HIGH);
+  digitalWrite(44, HIGH);
+//  start(strokes); 
+}
+
+void Pump::wash(int vol){  // reagent 1
+  double cal = 1; 
+  int strokes = vol/cal;
+  Serial.println(vol);
+  Serial.println(cal);                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+  Serial.println(strokes); 
+  Serial.println("WASHING");
+  digitalWrite(_re8, HIGH);
+  digitalWrite(_re1, HIGH);
+  start(strokes);
+  digitalWrite(_re1, LOW);
+  digitalWrite(_re8, LOW);
+}
+
+void Pump::sample(int vol){ // reagent 2
+  double cal = 1; 
+  int strokes = vol/cal;
+  
+  Serial.println("SAMPLING");
+  digitalWrite(_re8, HIGH);
+  digitalWrite(_re2, HIGH);
+  start(strokes);
+  digitalWrite(_re2, LOW);
+  digitalWrite(_re8, HIGH);
+}
+
+void Pump::reagent1(int vol){
+  double cal = 1; 
+  int strokes = vol/cal;
+  
+  Serial.println("Reagent 1");
+  digitalWrite(_re8, HIGH);
+  digitalWrite(_re3, HIGH);
+  start(strokes);
+  digitalWrite(_re3, LOW);
+  digitalWrite(_re8, HIGH); 
+}
+
+void Pump::reagent2(int vol){
+  double cal = 1; 
+  int strokes = vol/cal;
+  
+  Serial.println("Reagent 2");
+  digitalWrite(_re8, HIGH);
+  digitalWrite(_re4, HIGH);
+  start(strokes);
+  digitalWrite(_re4, LOW);
+  digitalWrite(_re8, HIGH); 
+}
+
+void Pump::reagent3(int vol){
+  double cal = 1; 
+  int strokes = vol/cal;
+  
+  Serial.println("Reagent 3");
+  digitalWrite(_re8, HIGH);
+  digitalWrite(_re5, HIGH);
+  start(strokes);
+  digitalWrite(_re4, LOW);
+  digitalWrite(_re5, HIGH); 
+}
+
+void Pump::reagent4(int vol){
+  double cal = 1; 
+  int strokes = vol/cal;
+  
+  Serial.println("Reagent 4");
+  digitalWrite(_re8, HIGH);
+  digitalWrite(_re6, HIGH);
+  start(strokes);
+  digitalWrite(_re6, LOW);
+  digitalWrite(_re8, HIGH); 
+}
+
+void Pump::test(int strokes){
+  for (int i = 0; i < strokes; i++){
+    int valves[] = {_re1, _re2, _re3, _re4, _re5, _re6, _re7, _re8, _re9, _valve1, _valve2, _valve3};
+    // list valves using private variables
+//    int valveTotal = sizeof(valves);
+    int valveTotal = sizeof(valves) / sizeof(valves[0]); 
+    
+    Serial.println("TESTING VALVES");
+    for (int j = 0; j < valveTotal; j++){
+      //open and close all valves one by one
+      Serial.print("Valve: ");
+      int valveConversion = valves[j] - (21+j); 
+//      Serial.println(valveConversion);
+      Serial.println(valves[j]);
+      digitalWrite(valves[j], HIGH);
+      delay(500); 
+      digitalWrite(valves[j], LOW);
+      delay(500);
+    }    
+  }  
+  Serial.println("TEST COMPLETE");   
+}
+
+void Pump::reset(){
+  _Step = 0;
+  currentStroke = 0;
+}
+
+void Pump::start(int strokes){
+  _strokes = strokes;
+  reset();
+  previousMillis = millis(); 
+  
+  while (_Step < 7){
+    currentMillis = millis();
+    if (currentMillis - previousMillis > time){
+      previousMillis = currentMillis; 
+      _Step++;
+     Serial.println(time); 
+    }
+    switch(_Step){
+      case 0:
+        time = _t1; 
+        digitalWrite(_valve1, HIGH);
+        digitalWrite(_valve2, LOW);
+        digitalWrite(_valve3, LOW);
+        break;
+      case 1:
+        time = _t2;
+        digitalWrite(_valve1, HIGH);
+        digitalWrite(_valve2, HIGH);
+        digitalWrite(_valve3, LOW);
+        break;
+      case 2:
+        time = _t3;
+        digitalWrite(_valve1, LOW);
+        digitalWrite(_valve2, HIGH);
+        digitalWrite(_valve3, LOW);
+        break;
+      case 3: 
+        time = _t4;
+        digitalWrite(_valve1, LOW);
+        digitalWrite(_valve2, HIGH);
+        digitalWrite(_valve3, HIGH);
+        break;
+      case 4:
+        time = _t5;
+        digitalWrite(_valve1, LOW);
+        digitalWrite(_valve2, LOW);
+        digitalWrite(_valve3, HIGH);
+        break;
+      case 5:
+        time = _t6;
+        digitalWrite(_valve1, LOW);
+        digitalWrite(_valve2, LOW);
+        digitalWrite(_valve3, LOW);
+        break;
+      case 6:
+        if (currentStroke < _strokes - 1){
+          Serial.print("Stroke ");
+          Serial.println(currentStroke + 1);
+//          Serial.println("Done pumping");
+          currentStroke++;
+          _Step = 0;
+        }
+        else 
+        {
+          Serial.print("Stroke ");
+          Serial.println(currentStroke + 1);
+          Serial.println("Done pumping");
+          _Step = 7; 
+        }
+        break;
+    }
+  }     
+}
+
